@@ -1,1 +1,1 @@
-tests.regression.gdoc.test_firefox_gdoc_read_basic_txt_1
+tests.regression.gdoc.test_firefox_gdoc_read_utf8_txt_1_pilot,regression/gdoc/common/test_start_record_fxperf,regression/gdoc/common/test_stop_record_fxperf

@@ -1,0 +1,8 @@
+click("1471511007586.png")
+wait(Pattern("1471511070401.png").similar(0.60),10)
+click(Pattern("1471511070401.png").similar(0.60))
+sleep(1)
+type("a", Key.CTRL)
+type(Key.DELETE)
+paste(sys.argv[3])
+type(Key.ENTER)
