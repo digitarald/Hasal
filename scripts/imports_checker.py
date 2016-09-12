@@ -13,13 +13,10 @@ import itertools
 FILE_PATTERNS_TO_CHECK = ["*.py"]
 
 # File patterns that are ignored for all tidy and lint checks.
-FILE_PATTERNS_TO_IGNORE = ["*.#*", "*.pyc", "__init__.py"]
+FILE_PATTERNS_TO_IGNORE = ["test_*.py", "__init__.py"]
 
 # Files that are ignored for all tidy and lint checks.
 IGNORED_FILES = [
-    os.path.join(".", "stat.json"),
-    os.path.join(".", "client_secrets.json"),
-    os.path.join(".", "result.json"),
     # Hidden files
     os.path.join(".", "."),
 ]
@@ -27,9 +24,9 @@ IGNORED_FILES = [
 # Directories that are ignored for the non-WPT tidy check.
 IGNORED_DIRS = [
     # Upstream
+    os.path.join(".", "flows"),
     os.path.join(".", "build"),
     os.path.join(".", "dist"),
-    os.path.join(".", "flows"),
     os.path.join(".", "output"),
     os.path.join(".", "thirdParty"),
     os.path.join(".", "resource"),
@@ -43,6 +40,7 @@ IGNORED_DIRS = [
 class ImportModuleChecker(object):
     def __init__(self):
         self.current_file_dir = os.path.dirname(os.path.realpath(__file__))
+        self.check_folder = os.path.abspath(os.path.join(self.current_file_dir, os.pardir))
 
     @staticmethod
     def is_iter_empty(iterator):
@@ -100,13 +98,14 @@ class ImportModuleChecker(object):
                 for f in files:
                     yield os.path.join(root, f)
 
-    def run(self):
-        files_to_check = ImportModuleChecker.filter_files('./lib', progress=True)
+    def run(self, folder):
+        self.check_folder = os.path.abspath(os.path.join(self.current_file_dir, os.pardir, folder))
+        files_to_check = ImportModuleChecker.filter_files(self.check_folder, progress=False)
 
         (has_element, files_to_check) = ImportModuleChecker.is_iter_empty(files_to_check)
         if not has_element:
             raise StopIteration
-        print('[INFO] Checking files for imported modules ...')
+        print('[INFO] Checking imported modules of {} ...'.format(self.check_folder))
 
         ret_set = set()
         for filename in files_to_check:
@@ -118,23 +117,37 @@ class ImportModuleChecker(object):
 
         import_set = set()
         for import_string in ret_set:
-            if 'NOQA' in import_string:
+            if 'NOQA' in import_string or 'noqa' in import_string:
                 continue
-            elif import_string.startswith('import '):
+            if ' as ' in import_string:
+                import_string = import_string.split(' as ')[0]
+            # get module name
+            if import_string.startswith('import '):
                 import_set.add(import_string.strip().replace('import ', ''))
             elif import_string.startswith('from '):
-                import_set.add(import_string.strip().replace('from ', '').replace(' import ', '.'))
+                par_pkg, sub_pkgs = import_string.split(' import ')
+                par_pkg = par_pkg.replace('from ', '')
+                for sub_pkg in sub_pkgs.split(','):
+                    import_set.add('{}.{}'.format(par_pkg, sub_pkg.strip()))
         return import_set
+
+    def filter(self):
+        pass
 
 
 def main():
     try:
-        ret = ImportModuleChecker().run()
+        start_filter = ['.', '..', '_', '%', 'lib', 'common', 'base', 'desktopHelper']
+        folder_list = ['agent', 'lib', 'scripts', 'server', 'tools']
+        ret = set()
+        for folder in folder_list:
+            ret = ret.union(ImportModuleChecker().run(folder))
         print('')
+        ret = [m for m in list(ret) if not any(m.startswith(f) for f in start_filter)]
         print(ret)
-        print('[INFO] Running python CV2 module passed.')
+        print('[INFO] Running Hasal Imported Module passed.')
     except Exception as e:
-        print('[Error] Running python CV2 module failed.')
+        print('[Error] Running Hasal Imported Module failed.')
         print(e)
         exit(1)
 
