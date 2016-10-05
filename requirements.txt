@@ -11,6 +11,7 @@ argparse==1.2.1
 watchdog==0.8.3
 peakutils==1.0.3
 matplotlib>=1.5.1
+treeherder-client==3.1.0
 
 python-dateutil
 keyring

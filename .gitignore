@@ -10,6 +10,8 @@ result.json
 _virtualenv
 *~
 *.log
+credentials.json
+
 
 # 3rd party files
 thirdParty/*
