@@ -185,7 +185,8 @@ class ImageTool(object):
         if (row1 != row2) or (cols1 != cols2):
             return match
         else:
-            threshold = 0.0001
+            # threshold = 0.0001
+            threshold = 0.002
             mismatch_rate = np.sum(np.absolute(np.subtract(dct_obj_1, dct_obj_2))) / (row1 * cols1)
             if mismatch_rate > threshold:
                 return False

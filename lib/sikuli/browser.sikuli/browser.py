@@ -15,7 +15,7 @@ class GeneralBrowser():
 
     def enterLink(self, link):
         paste(link)
-        type(Key.ENTER)
+        # type(Key.ENTER)
 
 
 class Chrome(GeneralBrowser):
