@@ -13,7 +13,6 @@ fb = facebook.facebook()
 
 chrome.clickBar()
 chrome.enterLink(sys.argv[3])
-com.screen_shot()
 region = Region(int(sys.argv[6]), int(sys.argv[7]), int(sys.argv[8]), int(sys.argv[9]))
 img = capture(region)
 shutil.move(img, os.path.join(sys.argv[4], sys.argv[5]))
