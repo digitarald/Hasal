@@ -263,7 +263,7 @@ geometric_value = geometric_mean([8591, 9527])
 perf_data = {
     'performance_data': {
         'framework': {
-            'name': 'hasal-perf'
+            'name': 'hasal'
         },
         'suites': [
             {
